@@ -1,6 +1,5 @@
 package com.objmobile.testapp
 
-import android.app.Application.ActivityLifecycleCallbacks
 import android.app.PendingIntent
 import android.content.Intent
 import android.nfc.NfcAdapter
@@ -18,8 +17,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.objmobile.safemifare.MifareSafetyTag
+import androidx.lifecycle.lifecycleScope
+import com.objmobile.safemifare.BaseNfcDevice
+import com.objmobile.safemifare.MifareSafeTag
 import com.objmobile.testapp.ui.theme.SafetyMifareTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -27,10 +30,11 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         val tag = intent?.getParcelableExtra(NfcAdapter.EXTRA_TAG,Tag::class.java)!!
-        Log.d("MainActivity","onNewIntent: ${MifareSafetyTag(tag).readTagId()}")
-        val tagArray = MifareSafetyTag(tag).readTagData().toTypedArray().toList();
-        Log.d("MainActivity","onNewIntent: ${tagArray}")
-        Log.d("MainActivity","size: ${tagArray.size}")
+        lifecycleScope.launch(Dispatchers.IO) {
+            val tagArray = BaseNfcDevice(MifareSafeTag(tag)).readTagData().toTypedArray().toList();
+            Log.d("MainActivity","onNewIntent: ${tagArray}")
+            Log.d("MainActivity","size: ${tagArray.size}")
+        }
 
     }
     private fun getNfcScanPendingIntent(): PendingIntent {
