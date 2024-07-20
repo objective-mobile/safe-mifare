@@ -25,7 +25,11 @@ class BaseNfcDevice(private val tag: SafeTag) : NfcDevice {
             }
             blockIndexLast += numBlocks
         }
-        tag.close()
+        try {
+            tag.close()
+        } catch (e: Exception) {
+            Log.e("BaseNfcDevice","readTagData: tag close error ${e.message}")
+        }
         return mfcArray.toByteArray()
     }
 
@@ -56,6 +60,7 @@ class BaseNfcDevice(private val tag: SafeTag) : NfcDevice {
         try {
             tag.close()
         } catch (e: Exception) {
+            throw TagCloseException(e.message ?: "")
         }
     }
 

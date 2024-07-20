@@ -8,3 +8,7 @@ class MifareAuthenticateException(
 class FirstBlockException(
     blockIndex: Int
 ) : MifareException("Attempt to write to the first block of the sector. Block index - $blockIndex.")
+
+class TagCloseException(
+    closeMessage: String
+) : MifareException("Tag close error. $closeMessage")
